@@ -1,0 +1,43 @@
+.footer {
+  background: linear-gradient(135deg, #1f1f1f, #121212); /* Dark gradient */
+  color: #f1f1f1;
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.3); /* Soft shadow at top */
+  border-top: 1px solid #333;
+}
+
+.footer-title {
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.footer-links a:hover,
+.footer-social a:hover {
+  color: #ffc107; /* Accent color on hover */
+  transition: 0.3s;
+}
+
+.footer-links a {
+  font-weight: 500;
+}
+
+.footer-social i {
+  transition: transform 0.3s, color 0.3s;
+}
+
+.footer-social i:hover {
+  transform: scale(1.2);
+  color: #ffc107;
+}
+
+@media (max-width: 768px) {
+  .footer-links {
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+  .footer-social {
+    justify-content: center;
+  }
+  .footer-title {
+    font-size: 1.1rem;
+  }
+}
