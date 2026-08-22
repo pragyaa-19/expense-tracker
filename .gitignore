@@ -45,3 +45,4 @@ staticfiles/
 
 public
 file.py
+.env
