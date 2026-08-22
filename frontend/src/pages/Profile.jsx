@@ -62,7 +62,7 @@ export default function Profile() {
   const [success, setSuccess] = useState("");
   const [theme] = useState(localStorage.getItem("theme") || "light");
 
-  const BACKEND_URL = "http://127.0.0.1:8000"; // replace with your backend URL
+  const BACKEND_URL = import.meta.env.VITE_API_URL; // replace with your backend URL
 
   useEffect(() => {
     const fetchUser = async () => {
