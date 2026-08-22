@@ -47,11 +47,13 @@ function AuthForm({ method }) {
       }
 
       navigate("/"); // Redirect after success
-    } catch (err) {
-      console.error(err);
-      if (err.response?.data?.detail) setError(err.response.data.detail);
-      else setError("Something went wrong!");
-    } finally {
+    }  catch (err) {
+    console.error("STATUS:", err.response?.status);
+    console.error("DATA:", err.response?.data);
+    setError(JSON.stringify(err.response?.data || "Something went wrong!"));
+}
+      
+    finally {
       setLoading(false);
     }
   };
@@ -59,9 +61,9 @@ function AuthForm({ method }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="form-container bg-body text-body shadow p-4 rounded"
+      className="w-100"
     >
-      <h2 className="text-center mb-3">{isLogin ? "Login" : "Register"}</h2>
+      <h2 className="text-center mb-4">{isLogin ? "Login" : "Register"}</h2>
 
       {!isLogin && (
         <>
@@ -74,7 +76,7 @@ function AuthForm({ method }) {
             value={fullname}
             onChange={(e) => setFullname(e.target.value)}
             required
-            className="form-input mb-2"
+            className="form-control mb-2"
           />
 
           <input
@@ -83,7 +85,7 @@ function AuthForm({ method }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="form-input mb-2"
+            className="form-control mb-2"
           />
         </>
       )}
@@ -94,7 +96,7 @@ function AuthForm({ method }) {
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         required
-        className="form-input mb-2"
+        className="form-control mb-2"
       />
 
       <input
@@ -103,14 +105,14 @@ function AuthForm({ method }) {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
-        className="form-input mb-2"
+        className="form-control mb-2"
       />
 
-      {error && <div className="text-danger text-center mb-2">{error}</div>}
+      {error && <div className="text-danger text-center mb-3">{error}</div>}
 
       <button
         type="submit"
-        className="btn btn-primary w-100"
+        className="btn btn-primary w-100 py-2"
         disabled={loading}
       >
         {loading ? "Please wait..." : isLogin ? "Login" : "Register"}

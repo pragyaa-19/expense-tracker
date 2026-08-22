@@ -56,6 +56,23 @@ class UserInfo(APIView):
             "budget" : user.budget,
 
         })
+        
+    def patch(self,request):
+        user=request.user
+        budget = request.data.get("budget")
+        
+        if budget is None:
+            return Response(
+                {"error": "Budget is required"},
+                status=400
+            )
+        user.budget = budget
+        user.save()
+
+        return Response({
+            "message": "Budget updated successfully",
+            "budget": user.budget
+        })
     
 
 # for patch 

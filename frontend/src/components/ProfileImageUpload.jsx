@@ -3,11 +3,7 @@ function ProfileImageUpload({ onChange, preview }) {
     const file = e.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (onChange) onChange(reader.result); // pass base64 to parent
-    };
-    reader.readAsDataURL(file);
+    if (onChange) onChange(file);
   };
 
   return (
@@ -17,7 +13,7 @@ function ProfileImageUpload({ onChange, preview }) {
       style={{ cursor: "pointer" }}
     >
       <img
-        src={preview || "/default-avatar.png"} // default avatar
+        src={preview || "/default-avatar.png"}
         alt="Profile"
         className="rounded-circle border"
         style={{
@@ -27,6 +23,7 @@ function ProfileImageUpload({ onChange, preview }) {
           borderWidth: "2px",
         }}
       />
+
       <div
         className="position-absolute bottom-0 end-0 bg-primary rounded-circle d-flex align-items-center justify-content-center"
         style={{
@@ -35,8 +32,12 @@ function ProfileImageUpload({ onChange, preview }) {
           border: "2px solid white",
         }}
       >
-        <i className="bi bi-pencil text-white" style={{ fontSize: "12px" }}></i>
+        <i
+          className="bi bi-pencil text-white"
+          style={{ fontSize: "12px" }}
+        ></i>
       </div>
+
       <input
         type="file"
         id="profileUpload"

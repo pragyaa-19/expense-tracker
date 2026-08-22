@@ -29,60 +29,142 @@ def extract_text_from_file(file_path):
         img = enhancer.enhance(2)
         img = img.filter(ImageFilter.SHARPEN)
         text = pytesseract.image_to_string(img, config=OCR_CONFIG)
-
+        
+    print(text)
     return text
 
-import re
-from datetime import datetime
 
-import re
-from datetime import datetime
-
-CURRENCY_REGEX = r"(?:₹|Rs\.?)?\s*([\d]+(?:\.\d{1,2})?)"
+CURRENCY_REGEX = r"(?:₹|Rs\.?)\s*([\d]+(?:\.\d{1,2})?)"
 
 def extract_items(text):
     items = []
+
     lines = text.splitlines()
+
+    # Words/lines that should NOT become expenses
+    ignore_keywords = [
+        "total",
+        "grand total",
+        "subtotal",
+        "sub total",
+        "tax",
+        "cgst",
+        "sgst",
+        "igst",
+        "round off",
+        "thank you",
+        "qty",
+        "item qty",
+        "price amount",
+    ]
+
+    receipt_date = datetime.today().strftime("%Y-%m-%d")
+    vendor = "Other"
 
     for line in lines:
         line = line.strip()
+
         if not line:
             continue
 
-        # Extract date if present
-        date_match = re.search(r"(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})", line)
+        lower_line = line.lower()
+
+        # -----------------------------
+        # Find date
+        # -----------------------------
+        date_match = re.search(
+    r"\b(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})\b",
+    line
+)
+
         if date_match:
-            raw_date = date_match.group(1).replace("/", "-")
-            for fmt in ("%d-%m-%Y", "%d-%m-%y"):
-                try:
-                    date = datetime.strptime(raw_date, fmt).strftime("%Y-%m-%d")
-                    break
-                except ValueError:
-                    continue
-            else:
-                date = datetime.today().strftime("%Y-%m-%d")
-        else:
-            date = datetime.today().strftime("%Y-%m-%d")
+            day, month, year = date_match.groups()
 
-        # Try to extract amount with currency symbol first
-        amount_match = re.search(r"(?:₹|Rs\.?)\s*([\d]+(?:\.\d{1,2})?)", line)
-        if amount_match:
-            amount = float(amount_match.group(1))
-        else:
-            # Fallback: pick first number in the line
-            numbers = re.findall(r"[\d]+(?:\.\d{1,2})?", line)
-            amount = float(numbers[0]) if numbers else 0.0
+            if len(year) == 2:
+                year = "20" + year
 
-        # Remove numbers and date to get title
-        title_part = re.sub(r"[\d]+(?:\.\d{1,2})?", "", line)
-        title_part = re.sub(r"\d{1,2}[-/]\d{1,2}[-/]\d{2,4}", "", title_part)
-        title = title_part.strip().title() or "Unknown Item"
+            try:
+                receipt_date = datetime.strptime(
+            f"{day}-{month}-{year}",
+            "%d-%m-%Y"
+        ).strftime("%Y-%m-%d")
+            except ValueError:
+                pass
+
+            continue
+
+        # -----------------------------
+        # Detect vendor
+        # -----------------------------
+        
+        vendor = "Other"
+
+        # -----------------------------
+        # Ignore unnecessary lines
+        # -----------------------------
+        if any(keyword in lower_line for keyword in ignore_keywords):
+            continue
+
+        # -----------------------------
+        # Find numbers
+        # -----------------------------
+        numbers = re.findall(
+            r"\d+(?:\.\d{1,2})?",
+            line
+        )
+
+        if not numbers:
+            continue
+
+        # We need at least an amount
+        # Item lines generally contain:
+        # item | qty | price | amount
+        if len(numbers) < 2:
+            continue
+
+        # Last number = amount
+        try:
+            amount = float(numbers[-1])
+        except ValueError:
+            continue
+
+        if amount <= 0:
+            continue
+
+        # -----------------------------
+        # Remove numbers from title
+        # -----------------------------
+        title = re.sub(
+            r"\d+(?:\.\d{1,2})?",
+            "",
+            line
+        )
+
+        title = re.sub(
+            r"\s+",
+            " ",
+            title
+        ).strip()
+
+        # Remove random OCR symbols
+        title = re.sub(
+            r"[^A-Za-z0-9 &'-]",
+            "",
+            title
+        ).strip()
+
+        if not title:
+            continue
+
+        # Avoid obvious non-item lines
+        if len(title) < 2:
+            continue
 
         items.append({
-            "title": title,
+            "title": title.title(),
             "amount": amount,
-            "date": date,
-            "vendor": "Other"
+            "date": receipt_date,
+            "vendor": vendor,
         })
 
     return items

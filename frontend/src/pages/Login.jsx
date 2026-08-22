@@ -3,7 +3,7 @@ import AuthForm from "../components/AuthForm";
 
 export default function Login() {
   return (
-    <div className="container d-flex align-items-center justify-content-center min-vh-100">
+    <div className="container d-flex align-items-center justify-content-center py-5" style={{ minHeight: '80vh' }}>
       <div className="col-12 col-sm-10 col-md-6 col-lg-4">
         <div className="card shadow border-0 bg-body text-body">
           <div className="card-body p-4">

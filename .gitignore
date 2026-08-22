@@ -23,6 +23,7 @@ build/
 # =========================
 venv/
 .venv/
+backend/myenv/
 __pycache__/
 *.pyc
 *.sqlite3
@@ -41,3 +42,5 @@ staticfiles/
 *.njsproj
 *.sln
 *.sw?
+
+public
