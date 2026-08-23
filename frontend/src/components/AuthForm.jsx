@@ -68,7 +68,7 @@ function AuthForm({ method }) {
       {!isLogin && (
         <>
           {/* Profile Image Upload */}
-          <ProfileImageUpload onChange={setProfile} />
+          {/*<ProfileImageUpload onChange={setProfile} />*/}
 
           <input
             type="text"
