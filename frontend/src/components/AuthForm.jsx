@@ -4,14 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import "../styles/AuthForm.css";
 
-import ProfileImageUpload from "./ProfileImageUpload";
-
 function AuthForm({ method }) {
   const [username, setUsername] = useState("");
   const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [profile, setProfile] = useState(null); // profile picture
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(""); // for error messages
   const navigate = useNavigate();
@@ -25,35 +22,32 @@ function AuthForm({ method }) {
 
     try {
       if (isLogin) {
-        // Login API
-        const res = await api.post("/accounts/token/", { username, password });
+        const res = await api.post("/accounts/token/", {
+          username,
+          password,
+        });
+
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-        alert("Login Successful!");
-      } else {
-        // Register API with profile picture
-        const formData = new FormData();
-        formData.append("username", username);
-        formData.append("fullname", fullname);
-        formData.append("email", email);
-        formData.append("password", password);
-        if (profile) formData.append("profile", profile);
 
-        await api.post("/accounts/user/register/", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+        alert("Login Successful!");
+        navigate("/");
+      } else {
+        await api.post("/accounts/user/register/", {
+          username,
+          fullname,
+          email,
+          password,
         });
 
         alert("Registration Successful! Now login.");
+        navigate("/login");
       }
-
-      navigate("/"); // Redirect after success
-    }  catch (err) {
-    console.error("STATUS:", err.response?.status);
-    console.error("DATA:", err.response?.data);
-    setError(JSON.stringify(err.response?.data || "Something went wrong!"));
-}
-      
-    finally {
+    } catch (err) {
+      console.error("STATUS:", err.response?.status);
+      console.error("DATA:", err.response?.data);
+      setError(JSON.stringify(err.response?.data || "Something went wrong!"));
+    } finally {
       setLoading(false);
     }
   };
