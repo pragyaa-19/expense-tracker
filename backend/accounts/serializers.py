@@ -9,10 +9,8 @@ class NewUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MyUser
-        fields = ['id', 'username', 'email', 'fullname', 'password', 'profile',"budget"]
-        extra_kwargs = {
-            'profile': {'required': False, 'allow_null': True}
-        }
+        fields = ['id', 'username', 'email', 'fullname', 'password',"budget"]
+        
 
     def create(self, validated_data):
         # Use create_user to hash the password correctly
@@ -20,8 +18,7 @@ class NewUserSerializer(serializers.ModelSerializer):
             username=validated_data['username'],
             email=validated_data['email'],
             fullname=validated_data['fullname'],
-            password=validated_data['password'],
-            profile=validated_data.get('profile')  
+            password=validated_data['password'], 
         )
         return user
     
