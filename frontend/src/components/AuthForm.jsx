@@ -44,12 +44,18 @@ function AuthForm({ method }) {
         navigate("/login");
       }
     } catch (err) {
-      console.error("STATUS:", err.response?.status);
-      console.error("DATA:", err.response?.data);
-      setError(JSON.stringify(err.response?.data || "Something went wrong!"));
-    } finally {
-      setLoading(false);
-    }
+  console.error("ERROR:", err);
+
+  if (err.response) {
+    // Backend returned 400/401/500
+    setError(JSON.stringify(err.response.data));
+  } else {
+    // CORS / Network error
+    setError("Network error: Backend is not allowing requests.");
+  }
+} finally {
+  setLoading(false);
+}
   };
 
   return (
